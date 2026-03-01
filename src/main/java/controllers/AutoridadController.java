@@ -5,6 +5,7 @@
 package controllers;
 
 import daos.AutoridadDAO;
+import interfaces.iAutoridadDAO;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import models.Autoridad;
@@ -14,7 +15,7 @@ import models.Autoridad;
  * @author EdgarUrias
  */
 public class AutoridadController {
-    private final AutoridadDAO autoridadDAO;
+    private final iAutoridadDAO autoridadDAO;
     
     public AutoridadController(){
         autoridadDAO = new AutoridadDAO();
@@ -46,7 +47,7 @@ public class AutoridadController {
         return autoridadDAO.insertar(a);
     }
     
-    public Autoridad obtenerUsuario(int idAutoridad) {
+    public Autoridad obtenerAutoridad(int idAutoridad) {
         if (idAutoridad <= 0) {
             System.err.println("ID de autoridad inválido.");
             return null;
@@ -54,11 +55,11 @@ public class AutoridadController {
         return autoridadDAO.obtenerPorId(idAutoridad);
     }
 
-    public List<Autoridad> listarUsuarios() {
+    public List<Autoridad> listarAutoridades() {
         return autoridadDAO.obtenerTodos();
     }
 
-    public boolean actualizarAutoridad(String nombre, String correo, String telefono, String dependencia) {
+    public boolean actualizarAutoridad(int idAutoridad, String nombre, String correo, String telefono, String dependencia) {
         if(nombre == null || nombre.trim().isEmpty()){
             System.err.println("Error: El nombre del usuario no puede ser nulo");
             return false;
@@ -75,6 +76,10 @@ public class AutoridadController {
             System.err.println("Error: El telefono del usuario no puede ser nulo");
             return false;
         }
+        if(idAutoridad <= 0){
+            System.err.println("ID de autoridad invalido");
+            return false;
+        }
         
         Autoridad a = new Autoridad();
         a.setNombre(nombre.trim());
@@ -84,7 +89,7 @@ public class AutoridadController {
         return autoridadDAO.actualizar(a);
     }
 
-    public boolean eliminarUsuario(int idAutoridad) {
+    public boolean eliminarAutoridad(int idAutoridad) {
         if (idAutoridad <= 0) {
             System.err.println("ID de autoridad inválido.");
             return false;
@@ -92,7 +97,7 @@ public class AutoridadController {
         return autoridadDAO.eliminar(idAutoridad);
     }
     
-    public DefaultTableModel obtenerTablaUsuarios() {
+    public DefaultTableModel obtenerTablaAutoridades() {
         String[] columnas = {"ID", "NOMBRE", "CORREO", "TELEFÓNO", "DEPENDENCIA"};
         DefaultTableModel modelo = new DefaultTableModel(null, columnas);
         List<Autoridad> lista = autoridadDAO.obtenerTodos();
@@ -102,7 +107,7 @@ public class AutoridadController {
         return modelo;
     }
     
-    public DefaultTableModel obtenerTablaUsuariosPorFiltro(String filtro) {
+    public DefaultTableModel obtenerTablaAutoridadesPorFiltro(String filtro) {
         String[] columnas = {"ID", "NOMBRE", "CORREO", "TELEFÓNO", "DEPENDENCIA"};
         DefaultTableModel modelo = new DefaultTableModel(null, columnas);
         List<Autoridad> lista = autoridadDAO.obtenerTodosPorFiltro(filtro);
