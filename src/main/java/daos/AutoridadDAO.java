@@ -85,7 +85,7 @@ public class AutoridadDAO implements iAutoridadDAO{
         String sql = "SELECT * FROM Autoridad WHERE nombre LIKE ?";
         List<Autoridad> lista = new ArrayList<>();
         try (Connection conn = ConexionDB.getConnection(); 
-        PreparedStatement ps = conn.prepareStatement(sql)) {
+        PreparedStatement ps = conn.prepareStatement(sql)){
             ps.setString(1, "%" + filtro + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

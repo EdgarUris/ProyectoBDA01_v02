@@ -82,9 +82,9 @@ public class UsuarioDAO implements iUsuarioDAO{
         String sql = "SELECT * FROM Usuario WHERE nombre LIKE ?";
         List<Usuario> lista = new ArrayList<>();
         try (Connection conn = ConexionDB.getConnection(); 
-        PreparedStatement ps = conn.prepareStatement(sql); 
-        ResultSet rs = ps.executeQuery()) {
+        PreparedStatement ps = conn.prepareStatement(sql)){
             ps.setString(1, "%" + filtro + "%");
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Usuario usuario = new Usuario();
                 usuario.setIdUsuario(rs.getInt("id_usuario"));

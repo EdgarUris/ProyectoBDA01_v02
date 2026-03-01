@@ -92,9 +92,9 @@ public class BacheDAO implements iBacheDAO{
         String sql = "SELECT * FROM Bache WHERE ubicacion LIKE ?";
         List<Bache> lista = new ArrayList<>();
         try (Connection conn = ConexionDB.getConnection(); 
-        PreparedStatement ps = conn.prepareStatement(sql); 
-        ResultSet rs = ps.executeQuery()) {
+        PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + filtro + "%");
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Bache bache = new Bache();
                 bache.setIdBache(rs.getInt("id_bache"));
