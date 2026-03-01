@@ -54,7 +54,7 @@ public class UsuarioController{
         return userDAO.obtenerTodos();
     }
 
-    public boolean actualizarUsuario(String nombre, String correo, String telefono) {
+    public boolean actualizarUsuario(int id, String nombre, String correo, String telefono) {
         if(nombre == null || nombre.trim().isEmpty()){
             System.err.println("Error: El nombre del usuario no puede ser nulo");
             return false;
@@ -69,6 +69,7 @@ public class UsuarioController{
         }
         
         Usuario u = new Usuario();
+        u.setIdUsuario(id);
         u.setNombre(nombre.trim());
         u.setCorreoElectronico(correo.trim());
         u.setTelefono(telefono.trim());

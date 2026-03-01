@@ -4,9 +4,12 @@
  */
 package views;
 
+import java.awt.CardLayout;
+
 /**
  *
  * @author EdgarUrias
+ * @author axelm
  */
 public class frmPrincipal extends javax.swing.JFrame {
     
@@ -17,6 +20,11 @@ public class frmPrincipal extends javax.swing.JFrame {
      */
     public frmPrincipal() {
         initComponents();
+        pnlContenido.setLayout(new CardLayout());
+        pnlContenido.add(new pnlUsuarios(), "usuarios");
+        pnlContenido.add(new pnlAutoridades(), "autoridades");
+        pnlContenido.add(new pnlAtenciones(), "atenciones");
+        pnlContenido.add(new pnlBaches(), "baches");
     }
 
     /**
@@ -29,11 +37,9 @@ public class frmPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         jMenuItem4 = new javax.swing.JMenuItem();
-        jPanel1 = new javax.swing.JPanel();
-        lblBienvenida = new javax.swing.JLabel();
-        lblInfo = new javax.swing.JLabel();
+        pnlContenido = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        menuOpciones = new javax.swing.JMenu();
         mnuItemUsuarios = new javax.swing.JMenuItem();
         mnuItemAutoridades = new javax.swing.JMenuItem();
         mnuItemBaches = new javax.swing.JMenuItem();
@@ -43,55 +49,38 @@ public class frmPrincipal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(600, 300));
+        pnlContenido.setPreferredSize(new java.awt.Dimension(600, 300));
 
-        lblBienvenida.setFont(new java.awt.Font("Segoe UI", 2, 24)); // NOI18N
-        lblBienvenida.setText("Bienvenido al sistema de baches");
-
-        lblInfo.setText("Haga click en el menú y seleccione una opcion");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(131, 131, 131)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblBienvenida)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addComponent(lblInfo)))
-                .addContainerGap(135, Short.MAX_VALUE))
+        javax.swing.GroupLayout pnlContenidoLayout = new javax.swing.GroupLayout(pnlContenido);
+        pnlContenido.setLayout(pnlContenidoLayout);
+        pnlContenidoLayout.setHorizontalGroup(
+            pnlContenidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 720, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(lblBienvenida)
-                .addGap(18, 18, 18)
-                .addComponent(lblInfo)
-                .addContainerGap(213, Short.MAX_VALUE))
+        pnlContenidoLayout.setVerticalGroup(
+            pnlContenidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 350, Short.MAX_VALUE)
         );
 
-        jMenu1.setText("Opciones");
+        menuOpciones.setText("Opciones");
 
         mnuItemUsuarios.setText("Usuarios");
         mnuItemUsuarios.addActionListener(this::mnuItemUsuariosActionPerformed);
-        jMenu1.add(mnuItemUsuarios);
+        menuOpciones.add(mnuItemUsuarios);
 
         mnuItemAutoridades.setText("Autoridades");
         mnuItemAutoridades.addActionListener(this::mnuItemAutoridadesActionPerformed);
-        jMenu1.add(mnuItemAutoridades);
+        menuOpciones.add(mnuItemAutoridades);
 
         mnuItemBaches.setText("Baches");
         mnuItemBaches.addActionListener(this::mnuItemBachesActionPerformed);
-        jMenu1.add(mnuItemBaches);
+        menuOpciones.add(mnuItemBaches);
 
         mnuItemAtencion.setText("Atencion de baches");
         mnuItemAtencion.addActionListener(this::mnuItemAtencionActionPerformed);
-        jMenu1.add(mnuItemAtencion);
+        menuOpciones.add(mnuItemAtencion);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(menuOpciones);
 
         setJMenuBar(jMenuBar1);
 
@@ -99,32 +88,37 @@ public class frmPrincipal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pnlContenido, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 15, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(pnlContenido, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void mnuItemUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemUsuariosActionPerformed
-        // TODO add your handling code here:
+        CardLayout cl = (CardLayout) pnlContenido.getLayout();
+        cl.show(pnlContenido, "usuarios");
     }//GEN-LAST:event_mnuItemUsuariosActionPerformed
 
     private void mnuItemAtencionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemAtencionActionPerformed
-        // TODO add your handling code here:
+        CardLayout cl = (CardLayout) pnlContenido.getLayout();
+        cl.show(pnlContenido, "atenciones");
     }//GEN-LAST:event_mnuItemAtencionActionPerformed
 
     private void mnuItemAutoridadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemAutoridadesActionPerformed
-        // TODO add your handling code here:
+        CardLayout cl = (CardLayout) pnlContenido.getLayout();
+        cl.show(pnlContenido, "autoridades");
     }//GEN-LAST:event_mnuItemAutoridadesActionPerformed
 
     private void mnuItemBachesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemBachesActionPerformed
-        // TODO add your handling code here:
+        CardLayout cl = (CardLayout) pnlContenido.getLayout();
+        cl.show(pnlContenido, "baches");
     }//GEN-LAST:event_mnuItemBachesActionPerformed
 
     /**
@@ -153,15 +147,13 @@ public class frmPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JLabel lblBienvenida;
-    private javax.swing.JLabel lblInfo;
+    private javax.swing.JMenu menuOpciones;
     private javax.swing.JMenuItem mnuItemAtencion;
     private javax.swing.JMenuItem mnuItemAutoridades;
     private javax.swing.JMenuItem mnuItemBaches;
     private javax.swing.JMenuItem mnuItemUsuarios;
+    private javax.swing.JPanel pnlContenido;
     // End of variables declaration//GEN-END:variables
 }
