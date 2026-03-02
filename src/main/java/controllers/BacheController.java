@@ -43,8 +43,8 @@ public class BacheController {
             System.err.println("Error: El estado no puede ser nulo");
             return false;
         }
-        if(fechaReporte == null || estado.trim().isEmpty() || fechaReporte.after(Date.from(Instant.MIN))){
-            System.err.println("Error: La fecha no puede ser en el futuro o nula");
+        if (fechaReporte == null || fechaReporte.after(new java.util.Date())) {
+            System.err.println("Error: La fecha no puede ser nula ni estar en el futuro");
             return false;
         }
         if(idUsuario <= 0){

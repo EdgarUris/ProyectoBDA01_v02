@@ -28,12 +28,11 @@ public class pnlBaches extends javax.swing.JPanel {
      * Creates new form pnlBaches
      */
     public pnlBaches() {
-        
         initComponents();
         bController = new BacheController();
         uController = new UsuarioController();
         btnEliminar.setVisible(false);
-        cargarDatos();
+        cargarBaches();
     }
 
     /**
@@ -309,17 +308,18 @@ public class pnlBaches extends javax.swing.JPanel {
             String tamano = txtTamanoAprox.getText().trim();
             String severidad = String.valueOf(cbxSeveridad.getSelectedItem());
             String estado = String.valueOf(cbxEstado.getSelectedItem());
-            java.sql.Date fecha = (java.sql.Date) txtFecha.getDate();
+            java.util.Date JFecha = txtFecha.getDate();
+            if(JFecha == null){
+                JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de introducir la fecha", "Error: Fecha faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            java.sql.Date fecha = new java.sql.Date(JFecha.getTime());
             if(ubicacion.isEmpty()){
                 JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de introducir la ubicación", "Error: Ubicación faltante", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if(tamano.isEmpty()){
                 JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de introducir el tamaño", "Error: Tamaño faltante", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if(fecha.toString().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de introducir la fecha", "Error: Fecha faltante", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if(fecha.toLocalDate().isAfter(LocalDate.now())){
@@ -380,7 +380,9 @@ public class pnlBaches extends javax.swing.JPanel {
         if(fila >= 0){
             txtID.setText(tblBaches.getValueAt(fila, 0).toString());
             txtUbicacion.setText(tblBaches.getValueAt(fila, 1).toString());
-            txtFecha.setDate((java.util.Date) tblBaches.getValueAt(fila, 2));
+            String fechaStr = tblBaches.getValueAt(fila, 2).toString();
+            java.util.Date fecha = java.sql.Date.valueOf(fechaStr);
+            txtFecha.setDate(fecha);
             cbxSeveridad.setSelectedItem(tblBaches.getValueAt(fila, 3).toString());
             txtTamanoAprox.setText(tblBaches.getValueAt(fila, 4).toString());
             cbxEstado.setSelectedItem(tblBaches.getValueAt(fila, 5).toString());

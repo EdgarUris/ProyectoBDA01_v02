@@ -22,7 +22,7 @@ public class BacheDAO implements iBacheDAO{
 
     @Override
     public boolean insertar(Bache bache) {
-        String query = "INSERT INTO Bache(ubicacion, tamanIo_aproximado, nivel_severidad, estado_actual, fecha_reporte, id_usuario) VALUES(?, ?, ?, ?, ?. ?)";
+        String query = "INSERT INTO Bache(ubicacion, tamanIo_aproximado, nivel_severidad, estado_actual, fecha_reporte, id_usuario) VALUES(?, ?, ?, ?, ?, ?)";
         try(Connection con = ConexionDB.getConnection()){
             PreparedStatement ps = con.prepareStatement(query);
             ps.setString(1, bache.getUbicacion());
