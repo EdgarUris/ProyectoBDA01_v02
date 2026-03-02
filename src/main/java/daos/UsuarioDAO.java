@@ -46,7 +46,7 @@ public class UsuarioDAO implements iUsuarioDAO{
             ResultSet rs = ps.executeQuery();
             if(rs.next()){
                 usuario = new Usuario(rs.getInt("id_usuario"), 
-                        rs.getString("correoElectronico"), 
+                        rs.getString("correo"), 
                         rs.getString("nombre"), 
                         rs.getString("telefono"));
             }
@@ -107,7 +107,7 @@ public class UsuarioDAO implements iUsuarioDAO{
             ps.setString(1, usuario.getNombre());
             ps.setString(2, usuario.getCorreoElectronico());
             ps.setString(3, usuario.getTelefono());
-            ps.setInt(5, usuario.getIdUsuario());
+            ps.setInt(4, usuario.getIdUsuario());
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             System.err.println("Error al actualizar usuario: " + ex.getMessage());

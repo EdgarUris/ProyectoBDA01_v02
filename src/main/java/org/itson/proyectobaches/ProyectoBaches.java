@@ -4,12 +4,15 @@
 
 package org.itson.proyectobaches;
 
+import views.frmPrincipal;
+
 /**
  *
  * @author axelm
  */
 public class ProyectoBaches {
     public static void main(String[] args) {
-        
+        frmPrincipal frm = new frmPrincipal();
+        frm.setVisible(true);
     }
 }

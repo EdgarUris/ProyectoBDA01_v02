@@ -4,17 +4,24 @@
  */
 package views;
 
+import controllers.AutoridadController;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author EdgarUrias
  */
 public class pnlAutoridades extends javax.swing.JPanel {
 
+    private AutoridadController aController;
     /**
      * Creates new form pnlAutoridades
      */
     public pnlAutoridades() {
+        aController = new AutoridadController();
         initComponents();
+        btnEliminar.setVisible(false);
+        cargarAutoridades();
     }
 
     /**
@@ -43,7 +50,7 @@ public class pnlAutoridades extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblAutoridades = new javax.swing.JTable();
-        txtFiltro = new javax.swing.JTextField();
+        txtBusqueda = new javax.swing.JTextField();
         lblBusqueda = new javax.swing.JLabel();
 
         setPreferredSize(new java.awt.Dimension(600, 300));
@@ -54,6 +61,7 @@ public class pnlAutoridades extends javax.swing.JPanel {
         lblTelefono.setText("Telefonos:");
 
         txtID.setEditable(false);
+        txtID.setColumns(5);
 
         txtNombre.setColumns(20);
 
@@ -91,9 +99,20 @@ public class pnlAutoridades extends javax.swing.JPanel {
 
             }
         ));
+        tblAutoridades.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblAutoridadesMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tblAutoridades);
 
         jScrollPane1.setViewportView(jScrollPane2);
+
+        txtBusqueda.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBusquedaKeyReleased(evt);
+            }
+        });
 
         lblBusqueda.setText("Busqueda por ID de autoridad:");
 
@@ -128,26 +147,28 @@ public class pnlAutoridades extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(lblInfo))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addComponent(txtFiltro, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE))
-                    .addComponent(lblBusqueda))
-                .addGap(24, 24, 24))
+                        .addGap(24, 24, 24))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblBusqueda))
+                        .addContainerGap(88, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(lblBusqueda)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
                         .addComponent(lblInfo)
                         .addGap(25, 25, 25)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -183,17 +204,128 @@ public class pnlAutoridades extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        // TODO add your handling code here:
+        guardarActualizar();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // TODO add your handling code here:
+        limpiarTxts();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        eliminar();
     }//GEN-LAST:event_btnEliminarActionPerformed
 
+    private void tblAutoridadesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblAutoridadesMouseClicked
+        cargarDatos();
+    }//GEN-LAST:event_tblAutoridadesMouseClicked
+
+    private void txtBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaKeyReleased
+        buscar();
+    }//GEN-LAST:event_txtBusquedaKeyReleased
+
+    private void cargarAutoridades(){
+        tblAutoridades.setModel(aController.obtenerTablaAutoridades());
+    }
+    
+    private void limpiarTxts(){
+        txtID.setText("");
+        txtBusqueda.setText("");
+        txtCorreo.setText("");
+        txtNombre.setText("");
+        txtTelefono.setText("");
+        txtDependencia.setText("");
+        btnGuardar.setText("Guardar");
+        btnEliminar.setVisible(false);
+    }
+    
+    private void guardarActualizar(){
+        try{
+            String nombre = txtNombre.getText().trim();
+            String correo = txtCorreo.getText().trim();
+            String telefono = txtTelefono.getText().trim();
+            String dependencia = txtDependencia.getText().trim();
+            if(nombre.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de introducir el nombre", "Error: Nombre faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(correo.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de introducir el correo", "Error: Correo faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(telefono.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de introducir el telefono", "Error: Telefono faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(dependencia.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de introducir la dependencia", "Error: Dependencia faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if(btnGuardar.getText().equals("Guardar")){
+                boolean seAgrego = aController.agregar(nombre, correo, telefono, dependencia);
+                if(seAgrego){
+                    JOptionPane.showMessageDialog(this, "Autoridad agregada correctamente.");
+                }else{
+                    JOptionPane.showMessageDialog(this, "Error al agregar a la autoridad", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }else{
+                int id = Integer.parseInt(txtID.getText().trim());
+                boolean seAgrego = aController.actualizarAutoridad(id, nombre, correo, telefono, dependencia);
+                if(seAgrego){
+                    JOptionPane.showMessageDialog(this, "Autoridad actualizada correctamente.");
+                }else{
+                    JOptionPane.showMessageDialog(this, "Error al actualizar a la autoridad", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            cargarAutoridades();
+            limpiarTxts();
+        }catch(Exception ex){
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void eliminar(){
+        try{
+            int id = Integer.parseInt(txtID.getText().trim());
+            int confirmacion = JOptionPane.showConfirmDialog(this, "¿Seguro que desea eliminar a la autoridad?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+            if(confirmacion == JOptionPane.YES_OPTION){
+                boolean seElimino = aController.eliminarAutoridad(id);
+                if(seElimino){
+                    JOptionPane.showMessageDialog(this, "Se elimino correctamente la autoridad");
+                    limpiarTxts();
+                    cargarAutoridades();
+                }else{
+                    JOptionPane.showMessageDialog(this, "Error al eliminar la autoridad", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }else{
+                JOptionPane.showMessageDialog(this, "Operación cancelada");
+            }
+        }catch(Exception ex){
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void cargarDatos(){
+        int fila = tblAutoridades.getSelectedRow();
+        if(fila >= 0){
+            txtID.setText(tblAutoridades.getValueAt(fila, 0).toString());
+            txtNombre.setText(tblAutoridades.getValueAt(fila, 1).toString());
+            txtCorreo.setText(tblAutoridades.getValueAt(fila, 2).toString());
+            txtTelefono.setText(tblAutoridades.getValueAt(fila, 3).toString());
+            btnGuardar.setText("Actualizar");
+            btnEliminar.setVisible(true);
+        }
+    }
+    
+    private void buscar(){
+        String filtro = txtBusqueda.getText().trim();
+        if(filtro.isEmpty()){
+            cargarAutoridades();
+        }else{
+            tblAutoridades.setModel(aController.obtenerTablaAutoridadesPorFiltro(filtro));
+        }
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelar;
@@ -209,9 +341,9 @@ public class pnlAutoridades extends javax.swing.JPanel {
     private javax.swing.JLabel lblNombre;
     private javax.swing.JLabel lblTelefono;
     private javax.swing.JTable tblAutoridades;
+    private javax.swing.JTextField txtBusqueda;
     private javax.swing.JTextField txtCorreo;
     private javax.swing.JTextField txtDependencia;
-    private javax.swing.JTextField txtFiltro;
     private javax.swing.JTextField txtID;
     private javax.swing.JTextField txtNombre;
     private javax.swing.JTextField txtTelefono;

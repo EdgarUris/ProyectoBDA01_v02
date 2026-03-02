@@ -4,6 +4,8 @@
  */
 package views;
 
+import controllers.UsuarioController;
+
 /**
  *
  * @author EdgarUrias
@@ -11,13 +13,16 @@ package views;
 public class dlgBuscarUsuario extends javax.swing.JDialog {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(dlgBuscarUsuario.class.getName());
+    private UsuarioController uController;
 
     /**
      * Creates new form dlgBuscarUsuario
      */
     public dlgBuscarUsuario(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+        uController = new UsuarioController();
         initComponents();
+        cargarUsuarios();
     }
 
     /**
@@ -49,12 +54,23 @@ public class dlgBuscarUsuario extends javax.swing.JDialog {
             }
         ));
         tblUsuarios.getTableHeader().setReorderingAllowed(false);
+        tblUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblUsuariosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblUsuarios);
 
         jScrollPane2.setViewportView(jScrollPane1);
 
         lblBuscaUsuarios.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         lblBuscaUsuarios.setText("Selecciona un usuario:");
+
+        txtBusca.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBuscaKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -84,6 +100,16 @@ public class dlgBuscarUsuario extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void tblUsuariosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblUsuariosMouseClicked
+        if (evt.getClickCount() == 1) {
+            dispose();
+        }
+    }//GEN-LAST:event_tblUsuariosMouseClicked
+
+    private void txtBuscaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscaKeyReleased
+        buscar();
+    }//GEN-LAST:event_txtBuscaKeyReleased
 
     /**
      * @param args the command line arguments
@@ -121,7 +147,27 @@ public class dlgBuscarUsuario extends javax.swing.JDialog {
             }
         });
     }
-
+    
+    public Integer getUsuarioSeleccionado() {
+        int fila = tblUsuarios.getSelectedRow();
+        if (fila >= 0) {
+            return (Integer) tblUsuarios.getValueAt(fila, 0);
+        }
+        return null;
+    }
+    
+    private void cargarUsuarios(){
+        tblUsuarios.setModel(uController.obtenerTablaUsuarios());
+    }
+    
+    private void buscar() {
+        String nombre = txtBusca.getText().trim();
+        if (nombre.isEmpty()) {
+            cargarUsuarios();
+        } else {
+            tblUsuarios.setModel(uController.obtenerTablaUsuariosPorFiltro(nombre));
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

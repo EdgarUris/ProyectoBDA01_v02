@@ -117,6 +117,7 @@ public class pnlAtenciones extends javax.swing.JPanel {
         });
 
         txtID.setEditable(false);
+        txtID.setColumns(5);
 
         lblBusqueda.setText("Buscar atenciones por:");
 
@@ -308,12 +309,32 @@ public class pnlAtenciones extends javax.swing.JPanel {
             Date fechaInicio = txtFechaInicio.getDate();
             Date fechaSolucion = txtFechaSolucion.getDate();
             String estatus = cbxEstatus.getSelectedItem().toString().trim();
-            if(estatus.isEmpty()|| fechaInicio == null ||  this.txtBache == null || this.txtAutoridad == null){
-                JOptionPane.showMessageDialog(this, "Todos los campos, a excepcion de la fecha de solucion, son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+            if(estatus.isEmpty()){
+                JOptionPane.showMessageDialog(this, "El estatus es obligatorio", "Error: Estatus faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(fechaInicio == null){
+                JOptionPane.showMessageDialog(this, "La fecha de inicio es obligatoria", "Error: Estatus faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(this.txtBache == null){
+                JOptionPane.showMessageDialog(this, "El bache a atender es obligatorio", "Error: Bache faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(this.txtAutoridad == null){
+                JOptionPane.showMessageDialog(this, "La autoridad encargada es obligatoria", "Error: Autoridad faltante", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             java.sql.Date sqlFechaInicio = new java.sql.Date(fechaInicio.getTime());
             java.sql.Date sqlFechaSolucion = new java.sql.Date(fechaSolucion.getTime());
+            if(sqlFechaInicio.after(sqlFechaSolucion)){
+                JOptionPane.showMessageDialog(this, "La fecha de solución no puede ser antes de la fecha de inicio", "Error: Autoridad faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(sqlFechaInicio.toString().trim().isEmpty()){
+                JOptionPane.showMessageDialog(this, "La fecha de inicio es requerida", "Error: Fecha de inicio faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             if(btnGuardar.getText().equals("Guardar")){
                 boolean seAgrego = atController.agregar(sqlFechaInicio, sqlFechaSolucion, estatus, bache.getIdBache(), autoridad.getIdAutoridad());
                 if(seAgrego){

@@ -4,17 +4,36 @@
  */
 package views;
 
+import controllers.BacheController;
+import controllers.UsuarioController;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import models.Bache;
+import models.Usuario;
+
 /**
  *
  * @author EdgarUrias
  */
 public class pnlBaches extends javax.swing.JPanel {
 
+    private BacheController bController;
+    private UsuarioController uController;
+    private Usuario usuario;
     /**
      * Creates new form pnlBaches
      */
     public pnlBaches() {
+        
         initComponents();
+        bController = new BacheController();
+        uController = new UsuarioController();
+        btnEliminar.setVisible(false);
+        cargarDatos();
     }
 
     /**
@@ -26,12 +45,13 @@ public class pnlBaches extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        txtFechaSolucion = new com.toedter.calendar.JDateChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tblAutoridades = new javax.swing.JTable();
+        tblBaches = new javax.swing.JTable();
         btnCancelar = new javax.swing.JButton();
         lblNombre = new javax.swing.JLabel();
-        txtFiltro = new javax.swing.JTextField();
+        txtBusqueda = new javax.swing.JTextField();
         btnGuardar = new javax.swing.JButton();
         lblBusqueda = new javax.swing.JLabel();
         lblCorreo = new javax.swing.JLabel();
@@ -41,14 +61,17 @@ public class pnlBaches extends javax.swing.JPanel {
         lblTelefono = new javax.swing.JLabel();
         lblDependencia = new javax.swing.JLabel();
         txtID = new javax.swing.JTextField();
-        txtNombre = new javax.swing.JTextField();
+        txtUbicacion = new javax.swing.JTextField();
         txtTamanoAprox = new javax.swing.JTextField();
         cbxSeveridad = new javax.swing.JComboBox<>();
         lblFechaReporte = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         btnSeleccionarUsuario = new javax.swing.JButton();
+        txtFecha = new com.toedter.calendar.JDateChooser();
+        cbxEstado = new javax.swing.JComboBox<>();
+        txtUsuario = new javax.swing.JTextField();
 
-        tblAutoridades.setModel(new javax.swing.table.DefaultTableModel(
+        tblBaches.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
                 {},
@@ -59,7 +82,12 @@ public class pnlBaches extends javax.swing.JPanel {
 
             }
         ));
-        jScrollPane2.setViewportView(tblAutoridades);
+        tblBaches.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblBachesMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tblBaches);
 
         jScrollPane1.setViewportView(jScrollPane2);
 
@@ -68,10 +96,16 @@ public class pnlBaches extends javax.swing.JPanel {
 
         lblNombre.setText("Ubicacion:");
 
+        txtBusqueda.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBusquedaKeyReleased(evt);
+            }
+        });
+
         btnGuardar.setText("Guardar");
         btnGuardar.addActionListener(this::btnGuardarActionPerformed);
 
-        lblBusqueda.setText("Busqueda por ID de bache:");
+        lblBusqueda.setText("Busqueda por ubicación de bache:");
 
         lblCorreo.setText("Tamaño aprox.:");
 
@@ -88,8 +122,9 @@ public class pnlBaches extends javax.swing.JPanel {
         lblDependencia.setText("Estado actual:");
 
         txtID.setEditable(false);
+        txtID.setColumns(5);
 
-        txtNombre.setColumns(20);
+        txtUbicacion.setColumns(20);
 
         txtTamanoAprox.setColumns(10);
 
@@ -100,6 +135,12 @@ public class pnlBaches extends javax.swing.JPanel {
         jLabel1.setText("Usuario: ");
 
         btnSeleccionarUsuario.setText("Seleccionar");
+        btnSeleccionarUsuario.addActionListener(this::btnSeleccionarUsuarioActionPerformed);
+
+        cbxEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Reportado", "En revisión", "En proceso", "Reparado", "Rechazado" }));
+
+        txtUsuario.setEditable(false);
+        txtUsuario.setColumns(10);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -117,11 +158,10 @@ public class pnlBaches extends javax.swing.JPanel {
                         .addComponent(btnEliminar))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblDependencia)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblNombre)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtUbicacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblCorreo)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -135,19 +175,28 @@ public class pnlBaches extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(lblInfo)
-                            .addComponent(lblFechaReporte)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblDependencia)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cbxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblFechaReporte)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnSeleccionarUsuario)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 6, Short.MAX_VALUE)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addComponent(txtFiltro, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE))
+                        .addComponent(txtBusqueda, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE))
                     .addComponent(lblBusqueda))
-                .addGap(24, 24, 24))
+                .addGap(18, 18, 18))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -157,7 +206,7 @@ public class pnlBaches extends javax.swing.JPanel {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(lblBusqueda)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
@@ -171,7 +220,7 @@ public class pnlBaches extends javax.swing.JPanel {
                         .addGap(6, 6, 6)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblNombre)
-                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtUbicacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblCorreo)
@@ -181,41 +230,182 @@ public class pnlBaches extends javax.swing.JPanel {
                             .addComponent(lblTelefono)
                             .addComponent(cbxSeveridad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblDependencia)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblFechaReporte)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(btnSeleccionarUsuario))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnEliminar)
-                            .addComponent(btnCancelar)
-                            .addComponent(btnGuardar)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblFechaReporte))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel1)
+                                    .addComponent(btnSeleccionarUsuario)
+                                    .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btnEliminar)
+                                    .addComponent(btnCancelar)
+                                    .addComponent(btnGuardar)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(cbxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblDependencia))
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(20, 20, 20))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // TODO add your handling code here:
+        limpiarTxts();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        // TODO add your handling code here:
+        guardarActualizar();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        eliminar();
     }//GEN-LAST:event_btnEliminarActionPerformed
 
+    private void tblBachesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblBachesMouseClicked
+        cargarBaches();
+    }//GEN-LAST:event_tblBachesMouseClicked
+
+    private void txtBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaKeyReleased
+        buscar();
+    }//GEN-LAST:event_txtBusquedaKeyReleased
+
+    private void btnSeleccionarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeleccionarUsuarioActionPerformed
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        dlgBuscarUsuario dlg = new dlgBuscarUsuario(frame, true);
+        dlg.setLocationRelativeTo(this);
+        dlg.setVisible(true);
+
+        Integer idUsuario = dlg.getUsuarioSeleccionado();
+        if (idUsuario != null) {
+            usuario = uController.obtenerUsuario(idUsuario);
+            txtUsuario.setText("Nombre: " + usuario.getNombre());
+        }
+    }//GEN-LAST:event_btnSeleccionarUsuarioActionPerformed
+
+    private void cargarBaches(){
+        tblBaches.setModel(bController.obtenerTablaBaches());
+    }
+    
+    private void limpiarTxts(){
+        txtID.setText("");
+        txtBusqueda.setText("");
+        txtUbicacion.setText("");
+        txtTamanoAprox.setText("");
+        txtFecha.setDate(null);
+        btnGuardar.setText("Guardar");
+        btnEliminar.setVisible(false);
+    }
+    
+    private void guardarActualizar(){
+        try{
+            String ubicacion = txtUbicacion.getText().trim();
+            String tamano = txtTamanoAprox.getText().trim();
+            String severidad = String.valueOf(cbxSeveridad.getSelectedItem());
+            String estado = String.valueOf(cbxEstado.getSelectedItem());
+            java.sql.Date fecha = (java.sql.Date) txtFecha.getDate();
+            if(ubicacion.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de introducir la ubicación", "Error: Ubicación faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(tamano.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de introducir el tamaño", "Error: Tamaño faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(fecha.toString().isEmpty()){
+                JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de introducir la fecha", "Error: Fecha faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(fecha.toLocalDate().isAfter(LocalDate.now())){
+                JOptionPane.showMessageDialog(this, "La fecha de reporte del bache no puede ser en el futuro", "Error: Fecha invalida",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(txtUsuario.getText().isEmpty()){
+                JOptionPane.showMessageDialog(this, "Todos los campos son necesarios, favor de seleccionar el usuario", "Error: Usuario faltante", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if(btnGuardar.getText().equals("Guardar")){
+                boolean seAgrego = bController.agregar(ubicacion, tamano, severidad, estado, fecha, usuario.getIdUsuario());
+                if(seAgrego){
+                    JOptionPane.showMessageDialog(this, "Bache registrado correctamente.");
+                }else{
+                    JOptionPane.showMessageDialog(this, "Error al registrar el bache", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }else{
+                int id = Integer.parseInt(txtID.getText().trim());
+                boolean seAgrego = bController.actualizarBache(id, ubicacion, tamano, severidad, estado, fecha, usuario.getIdUsuario());
+                if(seAgrego){
+                    JOptionPane.showMessageDialog(this, "Información del bache actualizada correctamente.");
+                }else{
+                    JOptionPane.showMessageDialog(this, "Error al actualizar el bache", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            cargarBaches();
+            limpiarTxts();
+        }catch(Exception ex){
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void eliminar(){
+        try{
+            int id = Integer.parseInt(txtID.getText().trim());
+            int confirmacion = JOptionPane.showConfirmDialog(this, "¿Seguro que desea eliminar el bache?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+            if(confirmacion == JOptionPane.YES_OPTION){
+                boolean seElimino = bController.eliminarBache(id);
+                if(seElimino){
+                    JOptionPane.showMessageDialog(this, "Se elimino correctamente el bache");
+                    limpiarTxts();
+                }else{
+                    JOptionPane.showMessageDialog(this, "Error al eliminar el bache", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }else{
+                JOptionPane.showMessageDialog(this, "Operación cancelada");
+            }
+        }catch(Exception ex){
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void cargarDatos(){
+        //modelo de la tabla baches "ID", "UBICACION", "FECHA REPORTE", "SEVERIDAD", "TAMAÑO", "ESTADO", "ID USUARIO"
+        int fila = tblBaches.getSelectedRow();
+        if(fila >= 0){
+            txtID.setText(tblBaches.getValueAt(fila, 0).toString());
+            txtUbicacion.setText(tblBaches.getValueAt(fila, 1).toString());
+            txtFecha.setDate((java.util.Date) tblBaches.getValueAt(fila, 2));
+            cbxSeveridad.setSelectedItem(tblBaches.getValueAt(fila, 3).toString());
+            txtTamanoAprox.setText(tblBaches.getValueAt(fila, 4).toString());
+            cbxEstado.setSelectedItem(tblBaches.getValueAt(fila, 5).toString());
+            usuario = uController.obtenerUsuario((int) tblBaches.getValueAt(fila, 6));
+            txtUsuario.setText(usuario.getNombre());
+            btnGuardar.setText("Actualizar");
+            btnEliminar.setVisible(true);
+        }
+    }
+    
+    private void buscar(){
+        String filtro = txtBusqueda.getText().trim();
+        if(filtro.isEmpty()){
+            cargarBaches();
+        }else{
+            tblBaches.setModel(bController.obtenerTablaBachesPorFiltro(filtro));
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnSeleccionarUsuario;
+    private javax.swing.JComboBox<String> cbxEstado;
     private javax.swing.JComboBox<String> cbxSeveridad;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -228,10 +418,13 @@ public class pnlBaches extends javax.swing.JPanel {
     private javax.swing.JLabel lblInfo;
     private javax.swing.JLabel lblNombre;
     private javax.swing.JLabel lblTelefono;
-    private javax.swing.JTable tblAutoridades;
-    private javax.swing.JTextField txtFiltro;
+    private javax.swing.JTable tblBaches;
+    private javax.swing.JTextField txtBusqueda;
+    private com.toedter.calendar.JDateChooser txtFecha;
+    private com.toedter.calendar.JDateChooser txtFechaSolucion;
     private javax.swing.JTextField txtID;
-    private javax.swing.JTextField txtNombre;
     private javax.swing.JTextField txtTamanoAprox;
+    private javax.swing.JTextField txtUbicacion;
+    private javax.swing.JTextField txtUsuario;
     // End of variables declaration//GEN-END:variables
 }

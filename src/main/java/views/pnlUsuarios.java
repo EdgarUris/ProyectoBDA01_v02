@@ -64,6 +64,7 @@ public class pnlUsuarios extends javax.swing.JPanel {
         lblID.setText("ID:");
 
         txtID.setEditable(false);
+        txtID.setColumns(5);
 
         txtNombre.setColumns(20);
 

@@ -38,7 +38,7 @@ public class AutoridadDAO implements iAutoridadDAO{
 
     @Override
     public Autoridad obtenerPorId(int idAutoridad){
-        String query = "SELECT * FROM Autoridad WHERE idAutoridad = ?";
+        String query = "SELECT * FROM Autoridad WHERE id_autoridad = ?";
         Autoridad autoridad = null;
         try(Connection con = ConexionDB.getConnection();
         PreparedStatement ps = con.prepareStatement(query)){
