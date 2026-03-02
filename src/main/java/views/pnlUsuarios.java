@@ -23,7 +23,6 @@ public class pnlUsuarios extends javax.swing.JPanel {
         initComponents();
         uController = new UsuarioController();
         btnEliminar.setVisible(false);
-        btnCancelar.setVisible(true);
         cargarUsuarios();
     }
 
@@ -149,7 +148,7 @@ public class pnlUsuarios extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblBusqueda)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE)
                     .addComponent(txtBusqueda))
                 .addContainerGap())
         );

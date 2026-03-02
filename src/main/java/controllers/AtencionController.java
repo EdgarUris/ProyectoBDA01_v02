@@ -5,6 +5,7 @@
 package controllers;
 
 import daos.AtencionDAO;
+import interfaces.iAtencionDAO;
 import models.Atencion;
 import java.sql.Date;
 import java.util.List;
@@ -16,7 +17,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class AtencionController {
     
-    private final AtencionDAO atencionDAO;
+    private final iAtencionDAO atencionDAO;
     
     public AtencionController(){
         atencionDAO = new AtencionDAO();
@@ -64,7 +65,7 @@ public boolean agregar(Date fechaInicioRepa, Date fechaSolucion, String estatusF
         return atencionDAO.obtenerTodos();
     }
 
-    public boolean actualizarAtencion(Date fechaInicioRepa, Date fechaSolucion, String estatusFinal, 
+    public boolean actualizarAtencion(int idAtencion, Date fechaInicioRepa, Date fechaSolucion, String estatusFinal, 
         int idBache, int idAutoridad) {
         if(fechaInicioRepa == null){
             System.err.println("Error: La fecha de inicio de reparacion no puede ser nulo");
@@ -80,6 +81,10 @@ public boolean agregar(Date fechaInicioRepa, Date fechaSolucion, String estatusF
         }
         if(idAutoridad <= 0){
             System.err.println("Error: ID de autoridad invalido");
+            return false;
+        }
+        if(idAtencion <= 0){
+            System.err.println("Error: ID de atencion invalido");
             return false;
         }
         
@@ -102,8 +107,18 @@ public boolean agregar(Date fechaInicioRepa, Date fechaSolucion, String estatusF
         return atencionDAO.eliminar(idAtencion);
     }
     
+    public DefaultTableModel obtenerTablaAtencion() {
+        String[] columnas = {"ID", "BACHE", "AUTORIDAD", "INICIO REPARACION", "SOLUCION", "ESTATUS"};
+        DefaultTableModel modelo = new DefaultTableModel(null, columnas);
+        List<Atencion> lista = atencionDAO.obtenerTodos();
+        for (Atencion a : lista) {
+            modelo.addRow(new Object[]{a.getIdAtencion(), a.getIdBache(), a.getIdAutoridad(), a.getFecha_inicio_reparacion(), a.getFecha_solucion(), a.getEstatus_final()});
+        }
+        return modelo;
+    }
+    
     public DefaultTableModel obtenerTablaAtencionPorBache(int idBache) {
-        String[] columnas = {"ID", "ID BACHE", "ID AUTORIDAD", "FECHA INICIO REPARACION", "FECHA SOLUCION", "ESTATUS FINAL"};
+        String[] columnas = {"ID", "BACHE", "AUTORIDAD", "INICIO REPARACION", "SOLUCION", "ESTATUS"};
         DefaultTableModel modelo = new DefaultTableModel(null, columnas);
         List<Atencion> lista = atencionDAO.obtenerPorBache(idBache);
         for (Atencion a : lista) {
@@ -113,7 +128,7 @@ public boolean agregar(Date fechaInicioRepa, Date fechaSolucion, String estatusF
     }
     
     public DefaultTableModel obtenerTablaAtencionPorAutoridad(int idAutoridad) {
-        String[] columnas = {"ID", "ID BACHE", "ID AUTORIDAD", "FECHA INICIO REPARACION", "FECHA SOLUCION", "ESTATUS FINAL"};
+        String[] columnas = {"ID", "BACHE", "AUTORIDAD", "INICIO REPARACION", "SOLUCION", "ESTATUS"};
         DefaultTableModel modelo = new DefaultTableModel(null, columnas);
         List<Atencion> lista = atencionDAO.obtenerPorAutoridad(idAutoridad);
         for (Atencion a : lista) {

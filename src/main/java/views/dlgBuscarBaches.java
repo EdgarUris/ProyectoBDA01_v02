@@ -4,12 +4,16 @@
  */
 package views;
 
+import controllers.BacheController;
+
 /**
  *
  * @author EdgarUrias
+ * @author axelm
  */
 public class dlgBuscarBaches extends javax.swing.JDialog {
     
+    private BacheController bController;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(dlgBuscarBaches.class.getName());
 
     /**
@@ -18,6 +22,8 @@ public class dlgBuscarBaches extends javax.swing.JDialog {
     public dlgBuscarBaches(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        bController = new BacheController();
+        cargarBaches();
     }
 
     /**
@@ -49,12 +55,23 @@ public class dlgBuscarBaches extends javax.swing.JDialog {
             }
         ));
         tblBaches.getTableHeader().setReorderingAllowed(false);
+        tblBaches.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblBachesMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblBaches);
 
         jScrollPane2.setViewportView(jScrollPane1);
 
         lblBuscaUsuarios.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         lblBuscaUsuarios.setText("Selecciona un bache:");
+
+        txtBusca.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBuscaKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -84,6 +101,16 @@ public class dlgBuscarBaches extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void tblBachesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblBachesMouseClicked
+        if (evt.getClickCount() == 1) {
+            dispose();
+        }
+    }//GEN-LAST:event_tblBachesMouseClicked
+
+    private void txtBuscaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscaKeyReleased
+        buscar();
+    }//GEN-LAST:event_txtBuscaKeyReleased
 
     /**
      * @param args the command line arguments
@@ -121,7 +148,26 @@ public class dlgBuscarBaches extends javax.swing.JDialog {
             }
         });
     }
-
+    
+    private void cargarBaches(){
+        tblBaches.setModel(bController.obtenerTablaBaches());
+    }
+    
+    private void buscar() {
+        String ubicacion = txtBusca.getText().trim();
+        if (ubicacion.isEmpty()) {
+            cargarBaches();
+        } else {
+            tblBaches.setModel(bController.obtenerTablaBachesPorFiltro(ubicacion));
+        }
+    }
+    public Integer getBacheSeleccionado() {
+        int fila = tblBaches.getSelectedRow();
+        if (fila >= 0) {
+            return (Integer) tblBaches.getValueAt(fila, 0);
+        }
+        return null;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

@@ -4,17 +4,39 @@
  */
 package views;
 
+import controllers.AtencionController;
+import controllers.AutoridadController;
+import controllers.BacheController;
+import java.util.Date;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import models.Autoridad;
+import models.Bache;
+
 /**
  *
  * @author EdgarUrias
+ * @author axelm
  */
 public class pnlAtenciones extends javax.swing.JPanel {
+    
+    private AtencionController atController;
+    private Bache bache;
+    private BacheController bController;
+    private Autoridad autoridad;
+    private AutoridadController auController;
 
     /**
      * Creates new form pnlAtenciones
      */
     public pnlAtenciones() {
         initComponents();
+        atController = new AtencionController();
+        bController = new BacheController();
+        auController = new AutoridadController();
+        btnEliminar.setVisible(false);
+        cargarAtenciones();
     }
 
     /**
@@ -27,8 +49,7 @@ public class pnlAtenciones extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tblUsuarios = new javax.swing.JTable();
+        tblAtenciones = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         lblNombre = new javax.swing.JLabel();
         btnGuardar = new javax.swing.JButton();
@@ -40,16 +61,18 @@ public class pnlAtenciones extends javax.swing.JPanel {
         txtBusqueda = new javax.swing.JTextField();
         txtID = new javax.swing.JTextField();
         lblBusqueda = new javax.swing.JLabel();
-        txtFechaInicio = new javax.swing.JTextField();
-        txtFechaSolucion = new javax.swing.JTextField();
         jComboBox1 = new javax.swing.JComboBox<>();
         cbxEstatus = new javax.swing.JComboBox<>();
         lblBache = new javax.swing.JLabel();
         lblAutoridad = new javax.swing.JLabel();
         btnBuscarBache = new javax.swing.JButton();
         btnBuscarAutoridad = new javax.swing.JButton();
+        txtFechaInicio = new com.toedter.calendar.JDateChooser();
+        txtFechaSolucion = new com.toedter.calendar.JDateChooser();
+        txtBache = new javax.swing.JTextField();
+        txtAutoridad = new javax.swing.JTextField();
 
-        tblUsuarios.setModel(new javax.swing.table.DefaultTableModel(
+        tblAtenciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
                 {},
@@ -60,9 +83,12 @@ public class pnlAtenciones extends javax.swing.JPanel {
 
             }
         ));
-        jScrollPane2.setViewportView(tblUsuarios);
-
-        jScrollPane1.setViewportView(jScrollPane2);
+        tblAtenciones.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblAtencionesMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblAtenciones);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setText("Atención de baches");
@@ -84,15 +110,17 @@ public class pnlAtenciones extends javax.swing.JPanel {
 
         lblID.setText("ID:");
 
+        txtBusqueda.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBusquedaKeyReleased(evt);
+            }
+        });
+
         txtID.setEditable(false);
 
         lblBusqueda.setText("Buscar atenciones por:");
 
-        txtFechaInicio.setColumns(10);
-
-        txtFechaSolucion.setColumns(10);
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Autoridad", "Bache" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione", "Autoridad", "Bache" }));
 
         cbxEstatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pendiente", "En proceso", "Reparado", "Cancelado" }));
 
@@ -101,8 +129,10 @@ public class pnlAtenciones extends javax.swing.JPanel {
         lblAutoridad.setText("Autoridad:");
 
         btnBuscarBache.setText("Busca bache");
+        btnBuscarBache.addActionListener(this::btnBuscarBacheActionPerformed);
 
         btnBuscarAutoridad.setText("Busca autoridad");
+        btnBuscarAutoridad.addActionListener(this::btnBuscarAutoridadActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -112,110 +142,263 @@ public class pnlAtenciones extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblNombre)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblCorreo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtFechaSolucion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblTelefono)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbxEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblID)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnGuardar)
-                    .addComponent(btnEliminar)
-                    .addComponent(btnCancelar)
-                    .addComponent(jLabel1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblBache)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnBuscarBache))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblAutoridad)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnBuscarAutoridad)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lblNombre)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(txtFechaInicio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jLabel1)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lblCorreo)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(txtFechaSolucion, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(lblAutoridad)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(btnGuardar)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(btnCancelar)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(btnEliminar))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(txtAutoridad, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(lblTelefono)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(cbxEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblID)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(btnBuscarAutoridad))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblBache)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtBache)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnBuscarBache)))
+                        .addGap(21, 21, 21)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addComponent(txtBusqueda, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE))
+                    .addComponent(txtBusqueda)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblBusqueda)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(28, 28, 28))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblID)
+                    .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblBusqueda)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblID)
-                            .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(6, 6, 6)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblNombre)
-                            .addComponent(txtFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblCorreo)
-                            .addComponent(txtFechaSolucion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblTelefono)
-                            .addComponent(cbxEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblBache)
-                            .addComponent(btnBuscarBache))
-                        .addGap(6, 6, 6)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblAutoridad)
-                            .addComponent(btnBuscarAutoridad))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnGuardar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCancelar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnEliminar)
-                        .addGap(12, 12, 12))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addComponent(lblNombre)
+                    .addComponent(txtFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lblCorreo)
+                    .addComponent(txtFechaSolucion, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbxEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTelefono))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblBache)
+                    .addComponent(btnBuscarBache)
+                    .addComponent(txtBache, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblAutoridad)
+                    .addComponent(btnBuscarAutoridad)
+                    .addComponent(txtAutoridad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCancelar)
+                    .addComponent(btnEliminar)
+                    .addComponent(btnGuardar))
+                .addGap(41, 41, 41))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(16, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblBusqueda)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(22, 22, 22))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        // TODO add your handling code here:
+        guardar_actualizar();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // TODO add your handling code here:
+        limpiarTxts();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        eliminar();
     }//GEN-LAST:event_btnEliminarActionPerformed
 
+    private void btnBuscarBacheActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarBacheActionPerformed
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        dlgBuscarBaches dlg = new dlgBuscarBaches(frame, true);
+        dlg.setLocationRelativeTo(this);
+        dlg.setVisible(true);
+
+        Integer idBache = dlg.getBacheSeleccionado();
+        if (idBache != null) {
+            this.bache = bController.obtenerBache(idBache);
+            txtBache.setText("ID: " + bache.getIdBache());
+        }
+    }//GEN-LAST:event_btnBuscarBacheActionPerformed
+
+    private void btnBuscarAutoridadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarAutoridadActionPerformed
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        dlgBuscarAutoridades dlg = new dlgBuscarAutoridades(frame, true);
+        dlg.setLocationRelativeTo(this);
+        dlg.setVisible(true);
+
+        Integer idAutoridad = dlg.getAutoridadSeleccionada();
+        if (idAutoridad != null) {
+            autoridad = auController.obtenerAutoridad(idAutoridad);
+            txtAutoridad.setText("ID: " + autoridad.getIdAutoridad());
+        }
+    }//GEN-LAST:event_btnBuscarAutoridadActionPerformed
+
+    private void tblAtencionesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblAtencionesMouseClicked
+        cargarDatos();
+    }//GEN-LAST:event_tblAtencionesMouseClicked
+
+    private void txtBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaKeyReleased
+        buscar();
+    }//GEN-LAST:event_txtBusquedaKeyReleased
+
+    private void cargarAtenciones(){
+        tblAtenciones.setModel(atController.obtenerTablaAtencion());
+    }
+    
+    private void limpiarTxts(){
+        txtID.setText("");
+        txtBusqueda.setText("");
+        txtFechaInicio.setDate(null);
+        txtFechaSolucion.setDate(null);
+        txtBache.setText("");
+        txtAutoridad.setText("");
+        btnGuardar.setText("Guardar");
+        btnEliminar.setVisible(false);
+    }
+    
+    private void guardar_actualizar(){
+        try{
+            Date fechaInicio = txtFechaInicio.getDate();
+            Date fechaSolucion = txtFechaSolucion.getDate();
+            String estatus = cbxEstatus.getSelectedItem().toString().trim();
+            if(estatus.isEmpty()|| fechaInicio == null ||  this.txtBache == null || this.txtAutoridad == null){
+                JOptionPane.showMessageDialog(this, "Todos los campos, a excepcion de la fecha de solucion, son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            java.sql.Date sqlFechaInicio = new java.sql.Date(fechaInicio.getTime());
+            java.sql.Date sqlFechaSolucion = new java.sql.Date(fechaSolucion.getTime());
+            if(btnGuardar.getText().equals("Guardar")){
+                boolean seAgrego = atController.agregar(sqlFechaInicio, sqlFechaSolucion, estatus, bache.getIdBache(), autoridad.getIdAutoridad());
+                if(seAgrego){
+                    JOptionPane.showMessageDialog(this, "Atencion agregada correctamente.");
+                }else{
+                    JOptionPane.showMessageDialog(this, "Error al agregar la atencion", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }else{
+                int id = Integer.parseInt(txtID.getText().trim());
+                boolean seAgrego = atController.actualizarAtencion(id, sqlFechaInicio, sqlFechaSolucion, estatus, bache.getIdBache(), autoridad.getIdAutoridad());
+                if(seAgrego){
+                    JOptionPane.showMessageDialog(this, "Atencion actualizada correctamente.");
+                }else{
+                    JOptionPane.showMessageDialog(this, "Error al actualizar la atencion", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            cargarAtenciones();
+            limpiarTxts();
+        }catch(Exception ex){
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void eliminar(){
+        try{
+            int id = Integer.parseInt(txtID.getText().trim());
+            int confirmacion = JOptionPane.showConfirmDialog(this, "¿Seguro que desea eliminar la atencion?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+            if(confirmacion == JOptionPane.YES_OPTION){
+                boolean seElimino = atController.eliminarAtencion(id);
+                if(seElimino){
+                    JOptionPane.showMessageDialog(this, "Se elimino correctamente la atencion");
+                    limpiarTxts();
+                }else{
+                    JOptionPane.showMessageDialog(this, "Error al eliminar la atencion", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }else{
+                JOptionPane.showMessageDialog(this, "Operación cancelada");
+            }
+        }catch(Exception ex){
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void cargarDatos(){
+        int fila = tblAtenciones.getSelectedRow();
+        if(fila >= 0){
+            txtID.setText(tblAtenciones.getValueAt(fila, 0).toString());
+            bache = bController.obtenerBache((int) tblAtenciones.getValueAt(fila, 1));
+            txtBache.setText("ID: " + bache.getIdBache());
+            autoridad = auController.obtenerAutoridad((int) tblAtenciones.getValueAt(fila, 2));
+            txtAutoridad.setText("ID: " + autoridad.getIdAutoridad());
+            Date fechaInicio = new Date(tblAtenciones.getValueAt(fila, 3).toString());
+            txtFechaInicio.setDate(fechaInicio);
+            Date fechaSolucion = new Date(tblAtenciones.getValueAt(fila, 4).toString());
+            txtFechaSolucion.setDate(fechaSolucion);
+            btnGuardar.setText("Actualizar");
+            btnEliminar.setVisible(true);
+        }
+    }
+    
+    private void buscar(){
+        try{
+            String filtro = cbxEstatus.getSelectedItem().toString().trim();
+            String busqueda = txtBusqueda.getText().trim();
+            if(filtro.equals("Seleccione")){
+                cargarAtenciones();
+            }else if(filtro.equals("Bache")){
+                if(busqueda.isEmpty()){
+                    cargarAtenciones();
+                }else{
+                    int idBache = Integer.parseInt(busqueda);
+                    tblAtenciones.setModel(atController.obtenerTablaAtencionPorBache(idBache));
+                }
+            }else{
+                if(busqueda.isEmpty()){
+                    cargarAtenciones();
+                }else{
+                    int idAutoridad = Integer.parseInt(busqueda);
+                    tblAtenciones.setModel(atController.obtenerTablaAtencionPorAutoridad(idAutoridad));
+                }
+            }
+        }catch(NumberFormatException ex){
+            JOptionPane.showMessageDialog(this, "La busqueda debe ser un numero entero", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscarAutoridad;
@@ -227,7 +410,6 @@ public class pnlAtenciones extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblAutoridad;
     private javax.swing.JLabel lblBache;
     private javax.swing.JLabel lblBusqueda;
@@ -235,10 +417,12 @@ public class pnlAtenciones extends javax.swing.JPanel {
     private javax.swing.JLabel lblID;
     private javax.swing.JLabel lblNombre;
     private javax.swing.JLabel lblTelefono;
-    private javax.swing.JTable tblUsuarios;
+    private javax.swing.JTable tblAtenciones;
+    private javax.swing.JTextField txtAutoridad;
+    private javax.swing.JTextField txtBache;
     private javax.swing.JTextField txtBusqueda;
-    private javax.swing.JTextField txtFechaInicio;
-    private javax.swing.JTextField txtFechaSolucion;
+    private com.toedter.calendar.JDateChooser txtFechaInicio;
+    private com.toedter.calendar.JDateChooser txtFechaSolucion;
     private javax.swing.JTextField txtID;
     // End of variables declaration//GEN-END:variables
 }

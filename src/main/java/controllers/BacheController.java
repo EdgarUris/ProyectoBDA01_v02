@@ -5,6 +5,7 @@
 package controllers;
 
 import daos.BacheDAO;
+import interfaces.iBacheDAO;
 import java.time.Instant;
 import java.sql.Date;
 import java.time.Clock;
@@ -18,13 +19,13 @@ import models.Bache;
  * @author EdgarUrias
  */
 public class BacheController {
-    private final BacheDAO bacheDAO;
+    private final iBacheDAO bacheDAO;
     
     public BacheController(){
         bacheDAO = new BacheDAO();
     }
     
-    public boolean agregarUsuario(String ubicacion, String tamanoAprox, 
+    public boolean agregar(String ubicacion, String tamanoAprox, 
             String nivelSeveridad, String estado, Date fechaReporte, int idUsuario){
         if(ubicacion == null || ubicacion.trim().isEmpty()){
             System.err.println("Error: La ubicacion no puede ser nula");
@@ -62,9 +63,9 @@ public class BacheController {
         return bacheDAO.insertar(b);
     }
     
-    public Bache obtenerUsuario(int idBache) {
+    public Bache obtenerBache(int idBache) {
         if (idBache <= 0) {
-            System.err.println("ID de usuario inválido.");
+            System.err.println("ID de bache inválido.");
             return null;
         }
         return bacheDAO.obtenerPorId(idBache);
@@ -74,7 +75,7 @@ public class BacheController {
         return bacheDAO.obtenerTodos();
     }
 
-    public boolean actualizarBache(String ubicacion, String tamanoAprox, 
+    public boolean actualizarBache(int idBache, String ubicacion, String tamanoAprox, 
             String nivelSeveridad, String estado, Date fechaReporte, int idUsuario) {
         if(ubicacion == null || ubicacion.trim().isEmpty()){
             System.err.println("Error: La ubicacion no puede ser nula");
@@ -104,6 +105,10 @@ public class BacheController {
             System.err.println("ID de usuario invalido");
             return false;
         }
+        if(idBache <= 0){
+            System.err.println("ID de bache invalido");
+            return false;
+        }
         
         Bache b = new Bache();
         b.setEstado(estado);
@@ -124,7 +129,7 @@ public class BacheController {
         return bacheDAO.eliminar(idBache);
     }
     
-    public DefaultTableModel obtenerTablaUsuarios() {
+    public DefaultTableModel obtenerTablaBaches() {
         String[] columnas = {"ID", "UBICACION", "FECHA REPORTE", "SEVERIDAD", "TAMAÑO", "ESTADO", "ID USUARIO"};
         DefaultTableModel modelo = new DefaultTableModel(null, columnas);
         List<Bache> lista = bacheDAO.obtenerTodos();
@@ -135,7 +140,7 @@ public class BacheController {
         return modelo;
     }
     
-    public DefaultTableModel obtenerTablaUsuariosPorFiltro(String filtro) {
+    public DefaultTableModel obtenerTablaBachesPorFiltro(String filtro) {
         String[] columnas = {"ID", "UBICACION", "FECHA REPORTE", "SEVERIDAD", "TAMAÑO", "ESTADO", "ID USUARIO"};
         DefaultTableModel modelo = new DefaultTableModel(null, columnas);
         List<Bache> lista = bacheDAO.obtenerTodosPorFiltro(filtro);

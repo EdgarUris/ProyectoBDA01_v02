@@ -5,6 +5,7 @@
 package controllers;
 
 import daos.UsuarioDAO;
+import interfaces.iUsuarioDAO;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import models.Usuario;
@@ -15,7 +16,7 @@ import models.Usuario;
  */
 public class UsuarioController{
     
-    private final UsuarioDAO userDAO;
+    private final iUsuarioDAO userDAO;
     
     public UsuarioController(){
         userDAO = new UsuarioDAO();

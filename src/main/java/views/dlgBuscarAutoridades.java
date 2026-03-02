@@ -4,12 +4,16 @@
  */
 package views;
 
+import controllers.AutoridadController;
+
 /**
  *
  * @author EdgarUrias
+ * @author axelm
  */
 public class dlgBuscarAutoridades extends javax.swing.JDialog {
     
+    private AutoridadController auController;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(dlgBuscarAutoridades.class.getName());
 
     /**
@@ -18,6 +22,8 @@ public class dlgBuscarAutoridades extends javax.swing.JDialog {
     public dlgBuscarAutoridades(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        auController = new AutoridadController();
+        cargarAutoridades();
     }
 
     /**
@@ -49,12 +55,23 @@ public class dlgBuscarAutoridades extends javax.swing.JDialog {
             }
         ));
         tblAutoridades.getTableHeader().setReorderingAllowed(false);
+        tblAutoridades.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblAutoridadesMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblAutoridades);
 
         jScrollPane2.setViewportView(jScrollPane1);
 
         lblBuscaUsuarios.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         lblBuscaUsuarios.setText("Selecciona una autoridad:");
+
+        txtBusca.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBuscaKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -84,6 +101,16 @@ public class dlgBuscarAutoridades extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void tblAutoridadesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblAutoridadesMouseClicked
+        if (evt.getClickCount() == 1) {
+            dispose();
+        }
+    }//GEN-LAST:event_tblAutoridadesMouseClicked
+
+    private void txtBuscaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscaKeyReleased
+        buscar();
+    }//GEN-LAST:event_txtBuscaKeyReleased
 
     /**
      * @param args the command line arguments
@@ -122,6 +149,25 @@ public class dlgBuscarAutoridades extends javax.swing.JDialog {
         });
     }
 
+    private void cargarAutoridades(){
+        tblAutoridades.setModel(auController.obtenerTablaAutoridades());
+    }
+    
+    private void buscar() {
+        String nombre = txtBusca.getText().trim();
+        if (nombre.isEmpty()) {
+            cargarAutoridades();
+        } else {
+            tblAutoridades.setModel(auController.obtenerTablaAutoridadesPorFiltro(nombre));
+        }
+    }
+    public Integer getAutoridadSeleccionada() {
+        int fila = tblAutoridades.getSelectedRow();
+        if (fila >= 0) {
+            return (Integer) tblAutoridades.getValueAt(fila, 0);
+        }
+        return null;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
