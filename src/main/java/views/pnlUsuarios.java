@@ -213,6 +213,7 @@ public class pnlUsuarios extends javax.swing.JPanel {
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         eliminar();
+        cargarUsuarios();
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void cargarUsuarios(){

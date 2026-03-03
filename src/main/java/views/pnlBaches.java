@@ -265,10 +265,11 @@ public class pnlBaches extends javax.swing.JPanel {
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         eliminar();
+        cargarBaches();
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void tblBachesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblBachesMouseClicked
-        cargarBaches();
+        cargarDatos();
     }//GEN-LAST:event_tblBachesMouseClicked
 
     private void txtBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaKeyReleased
@@ -298,6 +299,7 @@ public class pnlBaches extends javax.swing.JPanel {
         txtUbicacion.setText("");
         txtTamanoAprox.setText("");
         txtFecha.setDate(null);
+        txtUsuario.setText("");
         btnGuardar.setText("Guardar");
         btnEliminar.setVisible(false);
     }
@@ -383,10 +385,50 @@ public class pnlBaches extends javax.swing.JPanel {
             String fechaStr = tblBaches.getValueAt(fila, 2).toString();
             java.util.Date fecha = java.sql.Date.valueOf(fechaStr);
             txtFecha.setDate(fecha);
-            cbxSeveridad.setSelectedItem(tblBaches.getValueAt(fila, 3).toString());
+            String opcionSeveridad = tblBaches.getValueAt(fila, 3).toString();
+            int indexSeveridad;
+            switch (opcionSeveridad) {
+                case "Leve":
+                    indexSeveridad = 0;
+                    break;
+                case "Moderado":
+                    indexSeveridad = 1;
+                    break;
+                case "Grave":
+                    indexSeveridad = 2;
+                    break;
+                case "Critico":
+                    indexSeveridad = 3;
+                    break;
+                default:
+                    indexSeveridad = 4;
+            }
             txtTamanoAprox.setText(tblBaches.getValueAt(fila, 4).toString());
-            cbxEstado.setSelectedItem(tblBaches.getValueAt(fila, 5).toString());
-            usuario = uController.obtenerUsuario((int) tblBaches.getValueAt(fila, 6));
+            cbxSeveridad.setSelectedIndex(indexSeveridad);
+            String opcionEstado = tblBaches.getValueAt(fila, 5).toString();
+            int indexEstado;
+            switch (opcionEstado) {
+                case "Reportado":
+                    indexEstado = 0;
+                    break;
+                case "En revisión":
+                    indexEstado = 1;
+                    break;
+                case "En proceso":
+                    indexEstado = 2;
+                    break;
+                case "Reparado":
+                    indexEstado = 3;
+                    break;
+                case "Rechazado":
+                    indexEstado = 4;
+                    break;
+                default:
+                    indexEstado = 5;
+            }
+            cbxEstado.setSelectedIndex(indexEstado);
+            int id = Integer.parseInt(tblBaches.getValueAt(fila, 6).toString().trim());
+            usuario = uController.obtenerUsuario(id);
             txtUsuario.setText(usuario.getNombre());
             btnGuardar.setText("Actualizar");
             btnEliminar.setVisible(true);

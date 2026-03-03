@@ -102,7 +102,7 @@ public class AutoridadController {
         DefaultTableModel modelo = new DefaultTableModel(null, columnas);
         List<Autoridad> lista = autoridadDAO.obtenerTodos();
         for (Autoridad a : lista) {
-            modelo.addRow(new Object[]{a.getIdAutoridad(), a.getNombre(), a.getCorreoElectronico(), a.getTelefono()});
+            modelo.addRow(new Object[]{a.getIdAutoridad(), a.getNombre(), a.getCorreoElectronico(), a.getTelefono(), a.getDependencia()});
         }
         return modelo;
     }
@@ -112,7 +112,7 @@ public class AutoridadController {
         DefaultTableModel modelo = new DefaultTableModel(null, columnas);
         List<Autoridad> lista = autoridadDAO.obtenerTodosPorFiltro(filtro);
         for (Autoridad a : lista) {
-            modelo.addRow(new Object[]{a.getIdAutoridad(), a.getNombre(), a.getCorreoElectronico(), a.getTelefono()});
+            modelo.addRow(new Object[]{a.getIdAutoridad(), a.getNombre(), a.getCorreoElectronico(), a.getTelefono(), a.getDependencia()});
         }
         return modelo;
     }

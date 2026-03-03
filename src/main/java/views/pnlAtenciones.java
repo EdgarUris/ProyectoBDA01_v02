@@ -253,6 +253,7 @@ public class pnlAtenciones extends javax.swing.JPanel {
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         eliminar();
+        cargarAtenciones();
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnBuscarBacheActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarBacheActionPerformed
@@ -326,10 +327,13 @@ public class pnlAtenciones extends javax.swing.JPanel {
                 return;
             }
             java.sql.Date sqlFechaInicio = new java.sql.Date(fechaInicio.getTime());
-            java.sql.Date sqlFechaSolucion = new java.sql.Date(fechaSolucion.getTime());
-            if(sqlFechaInicio.after(sqlFechaSolucion)){
-                JOptionPane.showMessageDialog(this, "La fecha de solución no puede ser antes de la fecha de inicio", "Error: Autoridad faltante", JOptionPane.ERROR_MESSAGE);
-                return;
+            java.sql.Date sqlFechaSolucion = null;
+            if(fechaSolucion != null){
+                sqlFechaSolucion = new java.sql.Date(fechaSolucion.getTime());
+                if(sqlFechaInicio.after(sqlFechaSolucion)){
+                    JOptionPane.showMessageDialog(this, "La fecha de solución no puede ser antes de la fecha de inicio", "Error: Autoridad faltante", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
             }
             if(sqlFechaInicio.toString().trim().isEmpty()){
                 JOptionPane.showMessageDialog(this, "La fecha de inicio es requerida", "Error: Fecha de inicio faltante", JOptionPane.ERROR_MESSAGE);
@@ -386,10 +390,34 @@ public class pnlAtenciones extends javax.swing.JPanel {
             txtBache.setText("ID: " + bache.getIdBache());
             autoridad = auController.obtenerAutoridad((int) tblAtenciones.getValueAt(fila, 2));
             txtAutoridad.setText("ID: " + autoridad.getIdAutoridad());
-            Date fechaInicio = new Date(tblAtenciones.getValueAt(fila, 3).toString());
+            String fechaInicioStr = tblAtenciones.getValueAt(fila, 3).toString();
+            Date fechaInicio = java.sql.Date.valueOf(fechaInicioStr);
             txtFechaInicio.setDate(fechaInicio);
-            Date fechaSolucion = new Date(tblAtenciones.getValueAt(fila, 4).toString());
-            txtFechaSolucion.setDate(fechaSolucion);
+            Object fchSolucion = tblAtenciones.getValueAt(fila, 4);
+            if(fchSolucion != null){
+                String fechaSolucionStr = fchSolucion.toString();
+                Date fechaSolucion = java.sql.Date.valueOf(fechaSolucionStr);
+                txtFechaSolucion.setDate(fechaSolucion);
+            }
+            String opcion = tblAtenciones.getValueAt(fila, 5).toString();
+            int index;
+            switch (opcion) {
+                case "pendiente":
+                    index = 0;
+                    break;
+                case "en proceso":
+                    index = 1;
+                    break;
+                case "reparado":
+                    index = 2;
+                    break;
+                case "cancelado":
+                    index = 3;
+                    break;
+                default:
+                    index = 4;
+            }
+            cbxEstatus.setSelectedIndex(index);
             btnGuardar.setText("Actualizar");
             btnEliminar.setVisible(true);
         }

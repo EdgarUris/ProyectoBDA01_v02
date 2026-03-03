@@ -134,7 +134,7 @@ public class BacheController {
         DefaultTableModel modelo = new DefaultTableModel(null, columnas);
         List<Bache> lista = bacheDAO.obtenerTodos();
         for (Bache b : lista) {
-            modelo.addRow(new Object[]{String.valueOf(b.getIdBache()), b.getUbicacion(), b.getFechaReporte().toString(), 
+            modelo.addRow(new Object[]{b.getIdBache(), b.getUbicacion(), b.getFechaReporte().toString(), 
                 b.getNivelSeveridad(), b.getTamanoAprox(), b.getEstado(), String.valueOf(b.getIdUsuario())});
         }
         return modelo;
@@ -145,7 +145,7 @@ public class BacheController {
         DefaultTableModel modelo = new DefaultTableModel(null, columnas);
         List<Bache> lista = bacheDAO.obtenerTodosPorFiltro(filtro);
         for (Bache b : lista) {
-            modelo.addRow(new Object[]{String.valueOf(b.getIdBache()), b.getUbicacion(), b.getFechaReporte().toString(), 
+            modelo.addRow(new Object[]{b.getIdBache(), b.getUbicacion(), b.getFechaReporte().toString(), 
                 b.getNivelSeveridad(), b.getTamanoAprox(), b.getEstado(), String.valueOf(b.getIdUsuario())});
         }
         return modelo;

@@ -213,6 +213,7 @@ public class pnlAutoridades extends javax.swing.JPanel {
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         eliminar();
+        cargarAutoridades();
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void tblAutoridadesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblAutoridadesMouseClicked
@@ -312,6 +313,7 @@ public class pnlAutoridades extends javax.swing.JPanel {
             txtNombre.setText(tblAutoridades.getValueAt(fila, 1).toString());
             txtCorreo.setText(tblAutoridades.getValueAt(fila, 2).toString());
             txtTelefono.setText(tblAutoridades.getValueAt(fila, 3).toString());
+            txtDependencia.setText(tblAutoridades.getValueAt(fila, 4).toString());
             btnGuardar.setText("Actualizar");
             btnEliminar.setVisible(true);
         }
